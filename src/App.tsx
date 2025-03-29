@@ -8,7 +8,7 @@ import {
   timeout,
 } from "./game";
 import { toast } from "react-toastify";
-import { shuffleArray } from "./util";
+import { redColors, shuffleArray } from "./util";
 
 const _void: RenderedTile = {
   type: "",
@@ -245,137 +245,156 @@ function App() {
     setGrid(newGrid);
   };
 
+  const [bgColor, setBgColor] = useState("white");
+  useEffect(() => {
+    if (remainSec <= 10) {
+      const index = Math.floor(
+        ((10 - remainSec) / 10) * (redColors.length - 1)
+      );
+      setBgColor(redColors[index]);
+    } else {
+      setBgColor("white");
+    }
+  }, [remainSec]);
+
   return (
-    <div className="mx-auto w-fit mt-5">
-      <table className="text-center w-full">
-        <tbody>
-          {grid.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              {row.map((tile, colIndex) => (
-                <td
-                  key={colIndex}
-                  className="relative size-[22px] border-1 border-gray-300"
-                  style={{
-                    backgroundColor: tile["color"] || "white",
-                  }}
-                >
-                  <button
-                    className="text-center size-full text-sm"
-                    disabled={isGameEnded}
-                    onClick={() => {
-                      const { message, type } = isValid({
-                        x: colIndex,
-                        y: rowIndex,
-                        type: actionType,
-                        direction,
-                      });
-                      if (type === false) {
-                        toast.error("그렇게는 둘 수 없습니다: " + message);
-                        return;
-                      }
-                      setNumber({
-                        x: colIndex,
-                        y: rowIndex,
-                        type: actionType,
-                        direction,
-                      });
-                      setOrder((prev) => prev + 1);
-                      setRemainSec(timeout);
-                      toast(
-                        `${actionType}(${
-                          direction === "up"
-                            ? "↑"
-                            : direction === "down"
-                            ? "↓"
-                            : direction === "left"
-                            ? "←"
-                            : "→"
-                        })을 (${colIndex}, ${rowIndex})에 두었습니다.`
-                      );
-                      // 게임 끝났으면
-                      if (order + 1 >= numbers.length) {
-                        toast(`게임이 끝났습니다.`);
-                      }
-                    }}
-                    onMouseEnter={() => {
-                      if (isGameEnded) return;
-                      setHoveredTile({ x: colIndex, y: rowIndex });
-                    }}
-                    onMouseLeave={() => {
-                      if (isGameEnded) return;
-                      setHoveredTile(null);
-                    }}
-                    onFocus={() => {
-                      if (isGameEnded) return;
-                      setHoveredTile({ x: colIndex, y: rowIndex });
-                    }}
-                    onBlur={() => {
-                      if (isGameEnded) return;
-                      setHoveredTile(null);
-                    }}
-                    // 마우스 오른쪽 버튼으로 회전
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      if (isGameEnded) return;
-                      const newDirection = (() => {
-                        switch (direction) {
-                          case "up":
-                            return "right";
-                          case "right":
-                            return "down";
-                          case "down":
-                            return "left";
-                          case "left":
-                            return "up";
-                        }
-                      })();
-                      setDirection(newDirection);
+    <div
+      className="h-screen transition-colors"
+      style={{ backgroundColor: bgColor }}
+    >
+      <div className="mx-auto w-fit pt-5">
+        <table
+          className="text-center w-full"
+          onContextMenu={(e) => e.preventDefault()}
+        >
+          <tbody>
+            {grid.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {row.map((tile, colIndex) => (
+                  <td
+                    key={colIndex}
+                    className="relative size-[22px] border-1 border-gray-300"
+                    style={{
+                      backgroundColor: tile["color"] || "white",
                     }}
                   >
-                    {tile["floor"] === -1 ? "" : tile["floor"]}
-                  </button>
-                  {/* 마우스를 올렸을 때 임시로 나오는 부분*/}
-                  {!isGameEnded && (
-                    <div
-                      className="absolute pointer-events-none top-0 left-0 w-full h-full opacity-50 text-center"
-                      style={{
-                        // 배경색을 hoveredGrid의 색상으로 설정
-                        backgroundColor:
-                          hoveredGrid[rowIndex][colIndex] || "transparent",
+                    <button
+                      className="text-center size-full text-sm"
+                      disabled={isGameEnded}
+                      onClick={() => {
+                        const { message, type } = isValid({
+                          x: colIndex,
+                          y: rowIndex,
+                          type: actionType,
+                          direction,
+                        });
+                        if (type === false) {
+                          toast.error("그렇게는 둘 수 없습니다: " + message);
+                          return;
+                        }
+                        setNumber({
+                          x: colIndex,
+                          y: rowIndex,
+                          type: actionType,
+                          direction,
+                        });
+                        setOrder((prev) => prev + 1);
+                        setRemainSec(timeout);
+                        toast(
+                          `${actionType}(${
+                            direction === "up"
+                              ? "↑"
+                              : direction === "down"
+                              ? "↓"
+                              : direction === "left"
+                              ? "←"
+                              : "→"
+                          })을 (${colIndex}, ${rowIndex})에 두었습니다.`
+                        );
+                        // 게임 끝났으면
+                        if (order + 1 >= numbers.length) {
+                          toast(`게임이 끝났습니다.`);
+                        }
                       }}
-                    />
-                  )}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="flex items-center justify-between mt-3">
-        <div className="border-2 border-gray-300 p-2 rounded inline-flex bg-">
-          남은 시간: {order === 0 ? "--" : Math.max(0, remainSec)}
+                      onMouseEnter={() => {
+                        if (isGameEnded) return;
+                        setHoveredTile({ x: colIndex, y: rowIndex });
+                      }}
+                      onMouseLeave={() => {
+                        if (isGameEnded) return;
+                        setHoveredTile(null);
+                      }}
+                      onFocus={() => {
+                        if (isGameEnded) return;
+                        setHoveredTile({ x: colIndex, y: rowIndex });
+                      }}
+                      onBlur={() => {
+                        if (isGameEnded) return;
+                        setHoveredTile(null);
+                      }}
+                      // 마우스 오른쪽 버튼으로 회전
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        if (isGameEnded) return;
+                        const newDirection = (() => {
+                          switch (direction) {
+                            case "up":
+                              return "right";
+                            case "right":
+                              return "down";
+                            case "down":
+                              return "left";
+                            case "left":
+                              return "up";
+                          }
+                        })();
+                        setDirection(newDirection);
+                      }}
+                    >
+                      {tile["floor"] === -1 ? "" : tile["floor"]}
+                    </button>
+                    {/* 마우스를 올렸을 때 임시로 나오는 부분*/}
+                    {!isGameEnded && (
+                      <div
+                        className="absolute pointer-events-none top-0 left-0 w-full h-full opacity-50 text-center"
+                        style={{
+                          // 배경색을 hoveredGrid의 색상으로 설정
+                          backgroundColor:
+                            hoveredGrid[rowIndex][colIndex] || "transparent",
+                        }}
+                      />
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="flex items-center justify-between mt-3">
+          <div className="border-2 border-gray-300 p-2 rounded inline-flex bg-">
+            남은 시간: {order === 0 ? "--" : Math.max(0, remainSec)}
+          </div>
+          <div className="border-2 border-gray-300 p-2 rounded inline-flex bg-">
+            {!isGameEnded && (
+              <span className="">
+                진행도: {order + 1} / {numbers.length}
+              </span>
+            )}
+          </div>
         </div>
-        <div className="border-2 border-gray-300 p-2 rounded inline-flex bg-">
-          {!isGameEnded && (
-            <span className="">
-              진행도: {order + 1} / {numbers.length}
-            </span>
-          )}
-        </div>
-      </div>
-      {/* current Tile: {isGameEnded ? "game ended" : actionType}
+        {/* current Tile: {isGameEnded ? "game ended" : actionType}
       <br /> */}
-      <div className="font-medium border-2 rounded border-gray-300 mt-3 p-2 flex items-center justify-between">
-        점수: <span className="text-3xl text-blue-500">{score}</span>
-      </div>
-      {/* Focused Tile:{" "}
+        <div className="font-medium border-2 rounded border-gray-300 mt-3 p-2 flex items-center justify-between">
+          점수: <span className="text-3xl text-blue-500">{score}</span>
+        </div>
+        {/* Focused Tile:{" "}
       {isGameEnded
         ? "game ended!"
         : hoveredTile
         ? `(${hoveredTile?.y}, ${hoveredTile?.x})`
         : ""} */}
-      {/* <hr /> */}
-      {/* {!isGameEnded && (
+        {/* <hr /> */}
+        {/* {!isGameEnded && (
         <div className="flex flex-col">
           {["up", "down", "left", "right"].map((_dir) => (
             <div key={_dir} className="flex items-center">
@@ -393,55 +412,57 @@ function App() {
           ))}
         </div>
       )} */}
-      {/* <hr /> */}
-      {/* 게임 재시작 버튼 */}
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded mt-3 hover:cursor-pointer w-full mb-3"
-        onClick={() => {
-          setGrid(
-            Array.from({ length: 20 }, () =>
-              Array.from({ length: 20 }, () => _void)
-            )
-          );
-          setNumbers(shuffleArray(rawNumbers) as Action["type"][]);
-          setOrder(0);
-          setScore(0);
-          setDirection("up");
-          setHoveredTile(null);
-          setRemainSec(Math.floor(timeout));
-          toast("게임이 재시작되었습니다.");
-        }}
-      >
-        Restart Game
-      </button>
-      <h2 className="text-2xl">게임 규칙</h2>
-      <ol>
-        <li>숫자 타일을 높게 쌓아서 고득점을 하세요</li>
-        <li>바닥에 놓은(=0층) 숫자는 무조건 0점입니다.</li>
-        <li>0층 타일 위에 놓은(=1층) 숫자는 자신의 점수가 됩니다.</li>
-        <li>
-          2층에 놓은 타일은 점수가 두 배, 3층에 놓은 타일은 점수가 3배입니다!
-        </li>
-        <li>
-          하지만 숫자 타일을 높이 쌓기는 쉽지 않습니다. 빈 칸을 덮으면 안 되고,
-        </li>
-        <li>같은 층 타일끼리는 모두 붙여 놓아야 합니다.</li>
-        <li>
-          또한, 위 층에 쌓을 때는 아래 깔린 타일 2개 이상에 걸쳐서 올려야
-          합니다.
-        </li>
-        <li>
-          <strong>마우스 클릭</strong>으로 타일을 놓을 수 있습니다.
-        </li>
-        <li>
-          <strong>마우스 오른쪽 클릭</strong>으로 타일을 회전할 수 있습니다.
-        </li>
-        <li>타일을 놓고 나면 다음 타일로 넘어갑니다.</li>
-        <li>
-          잘 생각해서 타일을 놓으세요! 단 타일을 놓을 수 있는 제한 시간은{" "}
-          {timeout}초 입니다.
-        </li>
-      </ol>
+        {/* <hr /> */}
+        {/* 게임 재시작 버튼 */}
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded mt-3 hover:cursor-pointer w-full mb-3"
+          onClick={() => {
+            setGrid(
+              Array.from({ length: 20 }, () =>
+                Array.from({ length: 20 }, () => _void)
+              )
+            );
+            setNumbers(shuffleArray(rawNumbers) as Action["type"][]);
+            setOrder(0);
+            setScore(0);
+            setDirection("up");
+            setHoveredTile(null);
+            setRemainSec(Math.floor(timeout));
+            toast("게임이 재시작되었습니다.");
+          }}
+        >
+          Restart Game
+        </button>
+        <h2 className="text-2xl">게임 규칙</h2>
+        <ol>
+          <li>숫자 타일을 높게 쌓아서 고득점을 하세요</li>
+          <li>바닥에 놓은(=0층) 숫자는 무조건 0점입니다.</li>
+          <li>0층 타일 위에 놓은(=1층) 숫자는 자신의 점수가 됩니다.</li>
+          <li>
+            2층에 놓은 타일은 점수가 두 배, 3층에 놓은 타일은 점수가 3배입니다!
+          </li>
+          <li>
+            하지만 숫자 타일을 높이 쌓기는 쉽지 않습니다. 빈 칸을 덮으면 안
+            되고,
+          </li>
+          <li>같은 층 타일끼리는 모두 붙여 놓아야 합니다.</li>
+          <li>
+            또한, 위 층에 쌓을 때는 아래 깔린 타일 2개 이상에 걸쳐서 올려야
+            합니다.
+          </li>
+          <li>
+            <strong>마우스 클릭</strong>으로 타일을 놓을 수 있습니다.
+          </li>
+          <li>
+            <strong>마우스 오른쪽 클릭</strong>으로 타일을 회전할 수 있습니다.
+          </li>
+          <li>타일을 놓고 나면 다음 타일로 넘어갑니다.</li>
+          <li>
+            잘 생각해서 타일을 놓으세요! 단 타일을 놓을 수 있는 제한 시간은{" "}
+            {timeout}초 입니다.
+          </li>
+        </ol>
+      </div>
     </div>
   );
 }
