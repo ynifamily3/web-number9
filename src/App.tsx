@@ -356,13 +356,28 @@ function App() {
                     {/* 마우스를 올렸을 때 임시로 나오는 부분*/}
                     {!isGameEnded && (
                       <div
-                        className="absolute pointer-events-none top-0 left-0 w-full h-full opacity-50 text-center"
+                        className="absolute pointer-events-none top-0 left-0 w-full h-full text-center"
                         style={{
                           // 배경색을 hoveredGrid의 색상으로 설정
                           backgroundColor:
-                            hoveredGrid[rowIndex][colIndex] || "transparent",
+                            // hoveredGrid[rowIndex][colIndex] || "transparent",
+                            hoveredGrid[rowIndex][colIndex]
+                              ? // opacity: 0.7, black
+                                "rgba(0, 0, 0, 0.7)"
+                              : "transparent",
                         }}
-                      />
+                      >
+                        {hoveredGrid[rowIndex][colIndex] ? (
+                          <div className="text-white text-sm">
+                            {/* // 원래 타일이 있던 floor를 표시해준다 */}
+                            {grid[rowIndex][colIndex].floor === -1
+                              ? ""
+                              : grid[rowIndex][colIndex].floor}
+                          </div>
+                        ) : (
+                          <div className="text-white text-sm"> </div>
+                        )}
+                      </div>
                     )}
                   </td>
                 ))}
@@ -375,11 +390,11 @@ function App() {
             남은 시간: {order === 0 ? "--" : Math.max(0, remainSec)}
           </div>
           <div className="border-2 border-gray-300 p-2 rounded inline-flex bg-">
-            {!isGameEnded && (
-              <span className="">
-                진행도: {order + 1} / {numbers.length}
-              </span>
-            )}
+            <span className="">
+              {!isGameEnded
+                ? `진행도: ${order + 1} / ${numbers.length}`
+                : "게임 종료!"}
+            </span>
           </div>
         </div>
         {/* current Tile: {isGameEnded ? "game ended" : actionType}
@@ -459,7 +474,7 @@ function App() {
           <li>타일을 놓고 나면 다음 타일로 넘어갑니다.</li>
           <li>
             잘 생각해서 타일을 놓으세요! 단 타일을 놓을 수 있는 제한 시간은{" "}
-            {timeout}초 입니다.
+            {timeout + 1}초 입니다.
           </li>
         </ol>
       </div>
