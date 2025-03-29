@@ -5,7 +5,7 @@ export type Action = {
   y: number; // y coordinate
 };
 
-export const timeout = 13 - 1; // 60초
+export const timeout = 60 - 1; // 60초
 
 export const rawNumbers = [
   "0",
