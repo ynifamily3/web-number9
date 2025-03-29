@@ -246,8 +246,8 @@ function App() {
   };
 
   return (
-    <div className="">
-      <table className="">
+    <div className="mx-auto w-fit mt-5">
+      <table className="text-center w-full">
         <tbody>
           {grid.map((row, rowIndex) => (
             <tr key={rowIndex}>
@@ -292,9 +292,9 @@ function App() {
                             : "→"
                         })을 (${colIndex}, ${rowIndex})에 두었습니다.`
                       );
-                      // 게임 끝났으면 점수 알림
+                      // 게임 끝났으면
                       if (order + 1 >= numbers.length) {
-                        toast(`게임이 끝났습니다. 점수: ${score}점`);
+                        toast(`게임이 끝났습니다.`);
                       }
                     }}
                     onMouseEnter={() => {
@@ -351,14 +351,23 @@ function App() {
           ))}
         </tbody>
       </table>
-      남은시간: {order === 0 ? "--" : Math.max(0, remainSec)}초
-      <br />
-      {!isGameEnded && `현재 차례: ${order + 1} / ${numbers.length}`}
-      <br />
+      <div className="flex items-center justify-between mt-3">
+        <div className="border-2 border-gray-300 p-2 rounded inline-flex bg-">
+          남은 시간: {order === 0 ? "--" : Math.max(0, remainSec)}
+        </div>
+        <div className="border-2 border-gray-300 p-2 rounded inline-flex bg-">
+          {!isGameEnded && (
+            <span className="">
+              진행도: {order + 1} / {numbers.length}
+            </span>
+          )}
+        </div>
+      </div>
       {/* current Tile: {isGameEnded ? "game ended" : actionType}
       <br /> */}
-      점수: {score}
-      <br />
+      <div className="font-medium border-2 rounded border-gray-300 mt-3 p-2 flex items-center justify-between">
+        점수: <span className="text-3xl text-blue-500">{score}</span>
+      </div>
       {/* Focused Tile:{" "}
       {isGameEnded
         ? "game ended!"
@@ -387,7 +396,7 @@ function App() {
       {/* <hr /> */}
       {/* 게임 재시작 버튼 */}
       <button
-        className="bg-blue-500 text-white px-4 py-2 rounded mt-3 hover:cursor-pointer"
+        className="bg-blue-500 text-white px-4 py-2 rounded mt-3 hover:cursor-pointer w-full mb-3"
         onClick={() => {
           setGrid(
             Array.from({ length: 20 }, () =>
@@ -405,6 +414,34 @@ function App() {
       >
         Restart Game
       </button>
+      <h2 className="text-2xl">게임 규칙</h2>
+      <ol>
+        <li>숫자 타일을 높게 쌓아서 고득점을 하세요</li>
+        <li>바닥에 놓은(=0층) 숫자는 무조건 0점입니다.</li>
+        <li>0층 타일 위에 놓은(=1층) 숫자는 자신의 점수가 됩니다.</li>
+        <li>
+          2층에 놓은 타일은 점수가 두 배, 3층에 놓은 타일은 점수가 3배입니다!
+        </li>
+        <li>
+          하지만 숫자 타일을 높이 쌓기는 쉽지 않습니다. 빈 칸을 덮으면 안 되고,
+        </li>
+        <li>같은 층 타일끼리는 모두 붙여 놓아야 합니다.</li>
+        <li>
+          또한, 위 층에 쌓을 때는 아래 깔린 타일 2개 이상에 걸쳐서 올려야
+          합니다.
+        </li>
+        <li>
+          <strong>마우스 클릭</strong>으로 타일을 놓을 수 있습니다.
+        </li>
+        <li>
+          <strong>마우스 오른쪽 클릭</strong>으로 타일을 회전할 수 있습니다.
+        </li>
+        <li>타일을 놓고 나면 다음 타일로 넘어갑니다.</li>
+        <li>
+          잘 생각해서 타일을 놓으세요! 단 타일을 놓을 수 있는 제한 시간은{" "}
+          {timeout}초 입니다.
+        </li>
+      </ol>
     </div>
   );
 }
