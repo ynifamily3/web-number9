@@ -31,21 +31,22 @@ export const rawNumbers = [
 ] as Action["type"][]; // 0~9까지의 숫자 배열
 
 export const colors = [
-  "#F8C8DC", // 연분홍
-  "#FCEECF", // 바닐라 크림
-  "#BEE7E9", // 민트
-  "#A7C7E7", // 소프트 블루
-  "#FFD1A9", // 살구
-  "#D4A5E1", // 라일락
-  "#F9F871", // 레몬 옐로우
-  "#C5E1A5", // 페일 그린
-  "#E6C7EB", // 연한 퍼플
-  "#F6B5A9", // 코랄 피치
+  "#D9F2FD",
+  "#6FC9F8",
+  "#28A5F3",
+  "#1287DE",
+  "#0C60AE",
+  "#F0E111",
+  "#BDB433",
+  "#8A8541",
+  "#57553A",
+  "#33332C",
 ] as const; // 색상 배열
 
 // 타일 한 칸의 상태
 export type RenderedTile = {
   color: string; // 색상
+  border: [1 | 0, 1 | 0, 1 | 0, 1 | 0]; // 임시: border (상, 좌, 하, 우)
   type: "" | Action["type"]; // 타일 종류 (렌더링될거임)
   floor: number; // 0 for ground, 1 for first floor, etc.
   id: number; // 서로 다른 타일을 구별하기 위한 id

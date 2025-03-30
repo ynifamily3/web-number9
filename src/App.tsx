@@ -15,6 +15,7 @@ const _void: RenderedTile = {
   color: "white",
   floor: -1,
   id: -1,
+  border: [0, 0, 0, 0],
 };
 const emptyGrid: (string | null)[][] = Array.from({ length: 20 }, () =>
   Array.from({ length: 20 }, () => null)
@@ -233,9 +234,16 @@ function App() {
         if (shape[i][j] === 1) {
           newGrid[y + i][x + j] = {
             type,
-            color: colors[type],
+            color: colors[maxFloor + 1], // colors[type],
             floor: maxFloor + 1,
             id: order,
+            // 상, 좌, 하, 우 border
+            border: [
+              shape[i - 1]?.[j] === 1 ? 0 : 1,
+              shape[i][j - 1] === 1 ? 0 : 1,
+              shape[i + 1]?.[j] === 1 ? 0 : 1,
+              shape[i][j + 1] === 1 ? 0 : 1,
+            ],
           };
         }
       }
@@ -273,14 +281,32 @@ function App() {
                 {row.map((tile, colIndex) => (
                   <td
                     key={colIndex}
-                    className="relative size-[22px] border-1 border-gray-300"
-                    style={{
-                      backgroundColor: tile["color"] || "white",
-                    }}
+                    className="relative size-[20px] border-1 border-gray-300"
+                    style={{}}
                   >
                     <button
-                      className="text-center size-full text-sm"
+                      className="text-center size-[calc(100%)] text-sm absolute top-[0px] left-[0px]"
                       disabled={isGameEnded}
+                      style={{
+                        backgroundColor: tile["color"] || "white",
+                        borderTopColor: tile["border"][0] ? "black" : undefined,
+                        borderTopWidth: tile["border"][0] ? "1px" : undefined,
+                        borderLeftColor: tile["border"][1]
+                          ? "black"
+                          : undefined,
+                        borderLeftWidth: tile["border"][1] ? "1px" : undefined,
+                        borderBottomColor: tile["border"][2]
+                          ? "black"
+                          : undefined,
+                        borderBottomWidth: tile["border"][2]
+                          ? "1px"
+                          : undefined,
+                        borderRightColor: tile["border"][3]
+                          ? "black"
+                          : undefined,
+                        borderRightWidth: tile["border"][3] ? "1px" : undefined,
+                        borderStyle: "solid",
+                      }}
                       onClick={() => {
                         const { message, type } = isValid({
                           x: colIndex,
@@ -351,7 +377,7 @@ function App() {
                         setDirection(newDirection);
                       }}
                     >
-                      {tile["floor"] === -1 ? "" : tile["floor"]}
+                      {/* {tile["floor"] === -1 ? "" : tile["floor"]} */}
                     </button>
                     {/* 마우스를 올렸을 때 임시로 나오는 부분*/}
                     {!isGameEnded && (
@@ -363,16 +389,16 @@ function App() {
                             // hoveredGrid[rowIndex][colIndex] || "transparent",
                             hoveredGrid[rowIndex][colIndex]
                               ? // opacity: 0.7, black
-                                "rgba(0, 0, 0, 0.7)"
+                                "rgba(0, 0, 0, 0.3)"
                               : "transparent",
                         }}
                       >
                         {hoveredGrid[rowIndex][colIndex] ? (
                           <div className="text-white text-sm">
                             {/* // 원래 타일이 있던 floor를 표시해준다 */}
-                            {grid[rowIndex][colIndex].floor === -1
+                            {/* {grid[rowIndex][colIndex].floor === -1
                               ? ""
-                              : grid[rowIndex][colIndex].floor}
+                              : grid[rowIndex][colIndex].floor} */}
                           </div>
                         ) : (
                           <div className="text-white text-sm"> </div>
